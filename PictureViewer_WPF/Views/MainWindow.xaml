@@ -1,0 +1,164 @@
+﻿<Window x:Class="PictureViewer_WPF.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PictureViewer_WPF"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+        xmlns:viewmodels="clr-namespace:PictureViewer_WPF.ViewModels" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
+        mc:Ignorable="d"
+        Title="Picture Viewer - WPF Application" Height="800" Width="1000"
+        WindowStartupLocation="CenterScreen" >
+
+    <Window.Resources>
+        <local:ZoomValueToPercentageConverter x:Key="ZoomValueToPercentageConverter" />
+    </Window.Resources>
+    
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closed">
+            <i:InvokeCommandAction Command="{Binding OnWindowClosingCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    
+    <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition />
+            <ColumnDefinition Width="150"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="130"/>
+        </Grid.RowDefinitions>
+
+        <Button 
+            x:Name="openImage" 
+            Command="{Binding OpenImageCommand}" 
+            Content="Open image" 
+            FontSize="14" 
+            FontWeight="DemiBold" 
+            Margin="10,20, 0, 5"
+            Background="White"
+            />
+
+        <StackPanel 
+            Orientation="Vertical"
+            HorizontalAlignment="Center"
+            Grid.Column="1"
+            Margin="0 20 0 0">
+            <Slider 
+                x:Name="zoom"  
+                Width="300" 
+                Margin="0" 
+                Minimum="500" 
+                Maximum="2500" 
+                SmallChange="1"
+                IsEnabled="{Binding IsSliderEnabled}"
+                SelectionStart="2500"
+                TickPlacement="TopLeft"
+                TickFrequency="100"
+                Cursor="Hand"
+                Value="{Binding SliderValue}"
+                />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label 
+                    Content="Zoom:"
+                    Margin="0"
+                    FontSize="10"
+                    Foreground="DarkGreen"/>
+                <Label 
+                    Content="{
+                        Binding Value, 
+                        ElementName=zoom , 
+                        Converter={StaticResource ZoomValueToPercentageConverter}}"
+                    Margin="0" 
+                    FontSize="10" 
+                    Foreground="DarkGreen"
+                    HorizontalAlignment="Center"/>
+                <Label 
+                    Content="%"
+                    Margin="0"
+                    FontSize="10"
+                    Foreground="DarkGreen"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Button 
+            x:Name="closeImage" 
+            Command="{Binding CloseImageCommand}" 
+            Content="Close image" 
+            Grid.Column="2"
+            FontSize="14" 
+            FontWeight="DemiBold" 
+            Margin="0 20 10 5"
+            Background="White"
+            />
+
+        <StackPanel 
+            Grid.Row="2" 
+            Orientation="Horizontal"
+            HorizontalAlignment="Left"
+            Grid.ColumnSpan="2"
+            Margin="5 5 0 0">
+            <Label
+                Content="Image path: "
+                Foreground="DarkRed"
+                FontStyle="Italic"
+                FontWeight="SemiBold"/>
+            <Label 
+                Content="{Binding ImageLocationPath}"
+                Foreground="DarkRed"
+                FontStyle="Italic"
+                FontWeight="Bold"/>
+        </StackPanel>
+
+        <ScrollViewer 
+            Grid.Row="3" 
+            Grid.ColumnSpan="3" 
+            CanContentScroll="True" 
+            HorizontalScrollBarVisibility="Auto" 
+            VerticalScrollBarVisibility="Auto"
+            >
+            <Border 
+                Grid.Row="3" 
+                Grid.ColumnSpan="3" 
+                BorderThickness="10" 
+                Background="DarkGray" 
+                RenderTransformOrigin="0.5, 0.5">
+                <Image 
+                    Source="{Binding ImageLocationPath}" 
+                    RenderOptions.BitmapScalingMode="HighQuality" 
+                    Grid.Row="3" 
+                    Grid.ColumnSpan="3" 
+                    Width="{Binding Value, ElementName=zoom, UpdateSourceTrigger=PropertyChanged}" 
+                    Stretch="Uniform"/>
+            </Border>
+        </ScrollViewer>
+
+        <StackPanel 
+            Grid.Row="4" 
+            Grid.Column="1" 
+            Orientation="Vertical" 
+            HorizontalAlignment="Center">
+            <Label 
+                Content="Image details:" 
+                Foreground="DarkRed"  
+                FontWeight="Bold"
+                HorizontalAlignment="Center"
+                />
+            <TextBlock 
+                Foreground="DarkBlue" 
+                FontSize="12" 
+                FontWeight="SemiBold" 
+                Margin="0 10 0 10" 
+                Text="{Binding ImageDetails}"
+                HorizontalAlignment="Center"
+                />
+        </StackPanel>
+    </Grid>
+</Window>
